@@ -1,0 +1,327 @@
+'use client';
+
+import { useState } from 'react';
+import { Container, Paper, Typography, Box, IconButton, Menu, MenuItem, Button } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import { styled } from '@mui/material/styles';
+import TranslateIcon from '@mui/icons-material/Translate';
+import VehicleBasicInfo from './components/VehicleBasicInfo';
+import VehicleCondition from './components/VehicleCondition';
+import VehicleFeatures from './components/VehicleFeatures';
+import ValuationResult from './components/ValuationResult';
+import MarketSelection from './components/MarketSelection';
+import { useTranslation } from 'react-i18next';
+import { FormData } from './types/vehicle';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+
+interface StyledPaperProps {
+  isActive?: boolean;
+}
+
+const StyledPaper = styled(Paper, {
+  shouldForwardProp: (prop) => prop !== 'isActive',
+})<StyledPaperProps>(({ theme, isActive }) => ({
+  background: isActive 
+    ? 'linear-gradient(145deg, rgba(40,40,45,0.93) 0%, rgba(35,35,40,0.95) 100%)'
+    : 'linear-gradient(145deg, rgba(40,40,45,0.1) 0%, rgba(35,35,40,0.15) 100%)',
+  backdropFilter: isActive ? 'blur(8px)' : 'blur(3px)',
+  borderRadius: theme.spacing(2),
+  padding: theme.spacing(4),
+  marginBottom: theme.spacing(4),
+  transition: 'all 0.3s ease-in-out',
+  border: '1px solid',
+  borderColor: isActive ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)',
+  '&:hover': {
+    transform: 'translateY(-2px)',
+    boxShadow: '0 8px 20px rgba(0,0,0,0.3)',
+    background: isActive 
+      ? 'linear-gradient(145deg, rgba(40,40,45,0.93) 0%, rgba(35,35,40,0.95) 100%)'
+      : 'linear-gradient(145deg, rgba(40,40,45,0.2) 0%, rgba(35,35,40,0.25) 100%)',
+  },
+}));
+
+const PageWrapper = styled(Box)(({ theme }) => ({
+  background: `linear-gradient(rgba(26, 26, 31, 0.85), rgba(45, 45, 53, 0.9)), url('/car-background.png')`,
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  backgroundAttachment: 'fixed',
+  backgroundRepeat: 'no-repeat',
+  minHeight: '100vh',
+  width: '100vw',
+  margin: 0,
+  padding: theme.spacing(3),
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  overflowX: 'hidden',
+}));
+
+const LogoImage = styled('img')({
+  height: '40px',
+  width: 'auto',
+  marginRight: '16px',
+});
+
+const FlagButton = styled(IconButton)(({ theme }) => ({
+  padding: theme.spacing(1),
+  marginLeft: theme.spacing(1),
+  background: 'rgba(255,255,255,0.1)',
+  backdropFilter: 'blur(4px)',
+  border: '1px solid rgba(255,255,255,0.1)',
+  width: '42px',
+  height: '42px',
+  '& img': {
+    width: '30px',
+    height: '20px',
+    objectFit: 'cover',
+    borderRadius: '2px',
+  }
+}));
+
+const HeaderWrapper = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  marginBottom: theme.spacing(4),
+  padding: theme.spacing(0, 2),
+}));
+
+const TitleWrapper = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+});
+
+const MainTitle = styled('h1')(({ theme }) => ({
+  fontSize: '2.5rem',
+  textAlign: 'center',
+  background: 'linear-gradient(90deg, #fff 0%, #e0e0e0 100%)',
+  WebkitBackgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
+  textShadow: '0 2px 4px rgba(0,0,0,0.2)',
+  fontWeight: 600,
+  margin: 0,
+}));
+
+const ContentWrapper = styled(Box)(({ theme }) => ({
+  position: 'relative',
+  zIndex: 1,
+  minHeight: '100vh',
+  display: 'flex',
+  flexDirection: 'column',
+}));
+
+const EstimateButton = styled(Button)(({ theme }) => ({
+  background: 'linear-gradient(45deg, #2196F3 30%, #00BCD4 90%)',
+  border: 0,
+  borderRadius: '25px',
+  boxShadow: '0 3px 15px 2px rgba(33, 150, 243, 0.3)',
+  color: 'white',
+  padding: '16px 40px',
+  fontSize: '1.4rem',
+  fontWeight: '800',
+  letterSpacing: '1px',
+  textTransform: 'uppercase',
+  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+  position: 'relative',
+  overflow: 'hidden',
+  '&:before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: '-100%',
+    width: '100%',
+    height: '100%',
+    background: 'linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent)',
+    animation: 'shine 3s infinite linear',
+  },
+  '@keyframes shine': {
+    '0%': {
+      left: '-100%',
+    },
+    '100%': {
+      left: '100%',
+    },
+  },
+  '&:hover': {
+    transform: 'scale(1.05) translateY(-2px)',
+    boxShadow: '0 5px 20px 3px rgba(33, 150, 243, 0.4)',
+    background: 'linear-gradient(45deg, #00BCD4 30%, #2196F3 90%)',
+  },
+  '&:active': {
+    transform: 'scale(0.98)',
+  },
+}));
+
+const defaultFormData: FormData = {
+  country: '',
+  make: '',
+  model: '',
+  version: '',
+  year: 2020,
+  mileage: 0,
+  engineSize: '',
+  enginePower: '',
+  transmission: '',
+  fuel: '',
+  features: [],
+  condition: ''
+};
+
+export default function Home() {
+  const { t, i18n } = useTranslation();
+  const [formData, setFormData] = useState<FormData>(defaultFormData);
+  const [showResult, setShowResult] = useState(false);
+  const [languageMenuAnchor, setLanguageMenuAnchor] = useState<null | HTMLElement>(null);
+  const [activeSection, setActiveSection] = useState<string | null>(null);
+
+  const handleFormUpdate = (section: string, data: any) => {
+    setFormData(prev => ({ ...prev, ...data }));
+    setActiveSection(section);
+  };
+
+  const handleRestart = () => {
+    setFormData(defaultFormData);
+    setShowResult(false);
+    setActiveSection(null);
+  };
+
+  const handleLanguageMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setLanguageMenuAnchor(event.currentTarget);
+  };
+
+  const handleLanguageMenuClose = () => {
+    setLanguageMenuAnchor(null);
+  };
+
+  const handleLanguageChange = (lang: string) => {
+    i18n.changeLanguage(lang);
+    handleLanguageMenuClose();
+  };
+
+  const handleEstimation = () => {
+    const requiredFields = ['country', 'make', 'model', 'year', 'mileage', 'condition'];
+    const isValid = requiredFields.every(field => formData[field as keyof FormData]);
+    
+    if (isValid) {
+      setShowResult(true);
+    } else {
+      alert(t('pleaseCompleteAllFields'));
+    }
+  };
+
+  const languages = [
+    { code: 'en', name: 'English', flag: 'https://flagcdn.com/w40/gb.png' },
+    { code: 'fr', name: 'Français', flag: 'https://flagcdn.com/w40/fr.png' },
+    { code: 'de', name: 'Deutsch', flag: 'https://flagcdn.com/w40/de.png' },
+    { code: 'es', name: 'Español', flag: 'https://flagcdn.com/w40/es.png' },
+  ];
+
+  return (
+    <PageWrapper>
+      <Container maxWidth="md">
+        <ContentWrapper>
+          <HeaderWrapper>
+            <TitleWrapper>
+              <MainTitle>{t('appTitle')}</MainTitle>
+            </TitleWrapper>
+            <Box>
+              <FlagButton onClick={handleLanguageMenuOpen}>
+                <img 
+                  src={languages.find(l => l.code === i18n.language)?.flag || 'https://flagcdn.com/w40/gb.png'} 
+                  alt={languages.find(l => l.code === i18n.language)?.name || 'English'}
+                />
+              </FlagButton>
+              <Menu
+                anchorEl={languageMenuAnchor}
+                open={Boolean(languageMenuAnchor)}
+                onClose={handleLanguageMenuClose}
+                PaperProps={{
+                  sx: {
+                    bgcolor: 'rgba(40,40,45,0.95)',
+                    backdropFilter: 'blur(8px)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    padding: '8px',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    gap: '8px',
+                  }
+                }}
+              >
+                {languages.map((lang) => (
+                  <FlagButton
+                    key={lang.code}
+                    onClick={() => handleLanguageChange(lang.code)}
+                    sx={{
+                      background: i18n.language === lang.code ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)',
+                      '&:hover': {
+                        background: 'rgba(255,255,255,0.3)',
+                      }
+                    }}
+                  >
+                    <img src={lang.flag} alt={lang.name} />
+                  </FlagButton>
+                ))}
+              </Menu>
+            </Box>
+          </HeaderWrapper>
+
+          {!showResult ? (
+            <Box>
+              <StyledPaper className={activeSection === 'market' ? 'active' : ''}>
+                <MarketSelection
+                  onSubmit={(data) => handleFormUpdate('market', data)}
+                  initialData={formData}
+                />
+              </StyledPaper>
+
+              <StyledPaper className={activeSection === 'basic' ? 'active' : ''}>
+                <VehicleBasicInfo
+                  onSubmit={(data) => handleFormUpdate('basic', data)}
+                  initialData={formData}
+                />
+              </StyledPaper>
+
+              <StyledPaper className={activeSection === 'condition' ? 'active' : ''}>
+                <VehicleCondition
+                  onSubmit={(data) => handleFormUpdate('condition', data)}
+                  initialData={formData}
+                />
+              </StyledPaper>
+
+              <StyledPaper className={activeSection === 'features' ? 'active' : ''}>
+                <VehicleFeatures
+                  onSubmit={(data) => handleFormUpdate('features', data)}
+                  onBack={() => setActiveSection('condition')}
+                  initialData={formData}
+                />
+              </StyledPaper>
+
+              <Box sx={{ textAlign: 'center', mt: 4 }}>
+                <EstimateButton
+                  onClick={handleEstimation}
+                  variant="contained"
+                  disableRipple
+                  startIcon={<AutoAwesomeIcon sx={{ fontSize: 28 }} />}
+                >
+                  GO!
+                </EstimateButton>
+              </Box>
+            </Box>
+          ) : (
+            <Box>
+              <StyledPaper>
+                <ValuationResult
+                  data={formData}
+                  onBack={() => setShowResult(false)}
+                  onRestart={handleRestart}
+                />
+              </StyledPaper>
+            </Box>
+          )}
+        </ContentWrapper>
+      </Container>
+    </PageWrapper>
+  );
+}
