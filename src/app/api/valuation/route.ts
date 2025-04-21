@@ -138,7 +138,7 @@ IMPORTANT: Les prix de voitures d'occasion sont souvent plus élevés que ce que
     // Calculate average price if missing or invalid
     if (typeof parsedContent.averagePrice !== 'number' || parsedContent.averagePrice <= 0) {
       // Calculate average from listings
-      const totalPrice = parsedContent.listings.reduce((sum, listing) => sum + (listing.price || 0), 0);
+      const totalPrice = parsedContent.listings.reduce((sum: number, listing) => sum + (listing.price || 0), 0);
       parsedContent.averagePrice = totalPrice / parsedContent.listings.length;
     }
 
@@ -171,8 +171,8 @@ export async function POST(request: Request) {
     // Calculer la variance des prix pour affiner le niveau de confiance
     if (marketData.listings.length >= 3) {
       const prices = marketData.listings.map(listing => listing.price);
-      const avgPrice = prices.reduce((sum, price) => sum + price, 0) / prices.length;
-      const variance = prices.reduce((sum, price) => sum + Math.pow(price - avgPrice, 2), 0) / prices.length;
+      const avgPrice = prices.reduce((sum: number, price: number) => sum + price, 0) / prices.length;
+      const variance = prices.reduce((sum: number, price: number) => sum + Math.pow(price - avgPrice, 2), 0) / prices.length;
       const coefficient = Math.sqrt(variance) / avgPrice; // coefficient de variation
       
       // Si la variance est trop élevée, réduire le niveau de confiance
@@ -204,7 +204,7 @@ export async function POST(request: Request) {
     const finalValue = Math.round(marketData.averagePrice * conditionMultiplier);
 
     // Calculate value impacts
-    const mileageImpact = ((vehicleData.mileage / marketData.listings.reduce((acc, l) => acc + l.mileage, 0) / marketData.listings.length) - 1) * 100;
+    const mileageImpact = ((vehicleData.mileage / marketData.listings.reduce((acc: number, l: any) => acc + l.mileage, 0) / marketData.listings.length) - 1) * 100;
     const featuresPremium = vehicleData.features.length * 2; // Each feature adds 2% to value
 
     return NextResponse.json({
