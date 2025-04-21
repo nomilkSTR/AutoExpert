@@ -138,7 +138,7 @@ IMPORTANT: Les prix de voitures d'occasion sont souvent plus élevés que ce que
     // Calculate average price if missing or invalid
     if (typeof parsedContent.averagePrice !== 'number' || parsedContent.averagePrice <= 0) {
       // Calculate average from listings
-      const totalPrice = parsedContent.listings.reduce((sum: number, listing) => sum + (listing.price || 0), 0);
+      const totalPrice = parsedContent.listings.reduce((sum: number, listing: any) => sum + (listing.price || 0), 0);
       parsedContent.averagePrice = totalPrice / parsedContent.listings.length;
     }
 
