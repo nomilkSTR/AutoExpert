@@ -17,13 +17,13 @@ export interface FormData {
   country: string;
   make: string;
   model: string;
-  version: string;
+  version?: string;
   year: number;
   mileage: number;
-  engineSize: string;
-  enginePower: string;
-  transmission: string;
-  fuel: string;
+  engineSize?: string;
+  enginePower?: string;
+  transmission?: string;
+  fuel?: string;
   features: string[];
   condition: string;
 } 

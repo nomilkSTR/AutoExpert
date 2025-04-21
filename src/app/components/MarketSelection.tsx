@@ -4,7 +4,6 @@ import { useForm, Controller } from 'react-hook-form';
 import {
   Typography,
   Box,
-  Button,
   Paper,
   FormControl,
   InputLabel,
@@ -34,7 +33,7 @@ const countries = [
 
 export default function MarketSelection({ onSubmit, initialData }: MarketSelectionProps) {
   const { t } = useTranslation();
-  const { control, handleSubmit, formState: { errors }, watch } = useForm({
+  const { control, watch, formState: { errors } } = useForm({
     defaultValues: {
       country: initialData.country || '',
     },
@@ -42,44 +41,33 @@ export default function MarketSelection({ onSubmit, initialData }: MarketSelecti
   });
 
   const onFormSubmit = useCallback((data: any) => {
-    console.log('[MarketSelection] Received data:', data);
-    console.log('[MarketSelection] Initial data:', initialData);
-
-    // Only submit if we have both country and vehicle data from initialData
-    if (!data.country) {
-      console.log('[MarketSelection] Missing country');
+    console.log('[MarketSelection] Processing form data:', data);
+    
+    // S'assurer que le pays est une chaîne non vide
+    const country = data.country?.trim();
+    if (!country) {
+      console.log('[MarketSelection] No country selected');
       return;
     }
 
-    if (!initialData || !initialData.make || !initialData.model || !initialData.year || 
-        !initialData.mileage || !initialData.engineSize || !initialData.enginePower || 
-        !initialData.transmission || !initialData.fuel) {
-      console.log('[MarketSelection] Missing vehicle data in initialData:', initialData);
-      return;
-    }
-
-    // Merge country with existing vehicle data
     const formData = {
       ...initialData,
-      country: data.country,
+      country: country,
     };
 
-    console.log('[MarketSelection] Submitting complete data:', formData);
+    console.log('[MarketSelection] Submitting data:', formData);
     onSubmit(formData);
   }, [initialData, onSubmit]);
 
-  // Add useEffect to watch form changes with debounce
   useEffect(() => {
     let timeout: NodeJS.Timeout;
     
     const subscription = watch((value, { name, type }) => {
       if (type === 'change') {
-        // Clear any existing timeout
         if (timeout) {
           clearTimeout(timeout);
         }
         
-        // Wait for 500ms after the last change before submitting
         timeout = setTimeout(() => {
           onFormSubmit(value);
         }, 500);

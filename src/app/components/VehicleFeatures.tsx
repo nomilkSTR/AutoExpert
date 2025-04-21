@@ -114,19 +114,9 @@ export default function VehicleFeatures({ onSubmit, onBack, initialData }: Vehic
   }, [standardFeatures, setValue, watch]);
 
   const onFormSubmit = (data: VehicleFeaturesFormData) => {
-    // Debug form data
-    console.log('[VehicleFeatures] Form data before validation:', data);
-
-    // Validate all required fields have non-empty values
-    if (!data.features?.length) {
-      console.log('[VehicleFeatures] Missing required fields: features');
-      setValue('features', [], { shouldValidate: true });
-      return;
-    }
-
     // All required fields are present, prepare the submission data
     const formData = {
-      features: [...new Set([...data.features, ...standardFeatures])], // Ensure standard features are included
+      features: [...new Set([...data.features || [], ...standardFeatures])], // Ensure standard features are included
     };
 
     console.log('[VehicleFeatures] Submitting form data:', formData);

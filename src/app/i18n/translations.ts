@@ -19,7 +19,7 @@ export const translations = {
     featuresConditionStep: 'Features & Condition',
     valuationResultStep: 'Valuation Result',
     selectCountryHelper: 'Select the country where the vehicle is registered',
-    appTitle: 'Vehicle Valuation',
+    appTitle: 'AutoExpert',
     
     // Basic vehicle info
     make: 'Make',
@@ -87,13 +87,6 @@ export const translations = {
 
       // Comfort
       bluetooth: 'Bluetooth',
-      heatedSeats: 'Heated Seats',
-      ventilatedSeats: 'Ventilated Seats',
-      leatherSeats: 'Leather Seats',
-      massageSeats: 'Massage Seats',
-      memorySeats: 'Memory Seats',
-      powerSeats: 'Power Seats',
-      rearAC: 'Rear Air Conditioning',
 
       // Safety
       abs: 'ABS',
@@ -108,10 +101,6 @@ export const translations = {
       // Technology
       headUpDisplay: 'Head-Up Display',
       keylessEntry: 'Keyless Entry',
-      navigationSystem: 'Navigation System',
-      premiumSound: 'Premium Sound System',
-      wirelessCharging: 'Wireless Charging',
-      voiceControl: 'Voice Control',
 
       // Exterior
       panoramicRoof: 'Panoramic Roof',
@@ -140,7 +129,14 @@ export const translations = {
       rLine: 'R-Line',
       sportLine: 'Sport Line',
       luxuryLine: 'Luxury Line'
-    }
+    },
+
+    // Loading steps
+    analyzingVehicleData: 'Analyzing vehicle data',
+    searchingMarketData: 'Searching market data',
+    comparingListings: 'Comparing listings',
+    calculatingFactors: 'Calculating factors',
+    finalizingValuation: 'Finalizing valuation'
   },
 
   fr: {
@@ -153,7 +149,7 @@ export const translations = {
     selectCountryHelper: 'Sélectionnez le pays où le véhicule est immatriculé',
     
     // App Title
-    appTitle: 'Estimation Véhicule',
+    appTitle: 'AutoExpert',
     
     // Vehicle Basic Info
     make: 'Marque',
@@ -354,7 +350,14 @@ export const translations = {
       rLine: 'Ligne R',
       sportLine: 'Ligne Sport',
       luxuryLine: 'Ligne Luxe'
-    }
+    },
+
+    // Loading steps
+    analyzingVehicleData: 'Analyse des données du véhicule',
+    searchingMarketData: 'Recherche des données du marché',
+    comparingListings: 'Comparaison des annonces',
+    calculatingFactors: 'Calcul des facteurs',
+    finalizingValuation: 'Finalisation de l\'estimation'
   },
 
   de: {
@@ -568,7 +571,14 @@ export const translations = {
       rLine: 'R-Line',
       sportLine: 'Sport Line',
       luxuryLine: 'Luxury Line'
-    }
+    },
+
+    // Loading steps
+    analyzingVehicleData: 'Analyse der Fahrzeugdaten',
+    searchingMarketData: 'Suche nach Marktdaten',
+    comparingListings: 'Vergleich der Anzeigen',
+    calculatingFactors: 'Berechnung der Faktoren',
+    finalizingValuation: 'Fertigstellung der Bewertung'
   },
 
   es: {
@@ -782,6 +792,13 @@ export const translations = {
       rLine: 'R-Line',
       sportLine: 'Sport Line',
       luxuryLine: 'Luxury Line'
-    }
+    },
+
+    // Loading steps
+    analyzingVehicleData: 'Analizando datos del vehículo',
+    searchingMarketData: 'Buscando datos de mercado',
+    comparingListings: 'Comparando anuncios',
+    calculatingFactors: 'Calculando factores',
+    finalizingValuation: 'Finalizando valoración'
   }
 }; 

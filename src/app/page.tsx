@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import { Container, Paper, Typography, Box, IconButton, Menu, MenuItem, Button } from '@mui/material';
 import Grid from '@mui/material/Grid';
@@ -159,7 +161,7 @@ const defaultFormData: FormData = {
   make: '',
   model: '',
   version: '',
-  year: 2020,
+  year: new Date().getFullYear(),
   mileage: 0,
   engineSize: '',
   enginePower: '',
@@ -169,15 +171,26 @@ const defaultFormData: FormData = {
   condition: ''
 };
 
-export default function Home() {
-  const { t, i18n } = useTranslation();
+const Providers = dynamic(() => import('./providers'), { ssr: false });
+
+function ClientHome() {
   const [formData, setFormData] = useState<FormData>(defaultFormData);
   const [showResult, setShowResult] = useState(false);
   const [languageMenuAnchor, setLanguageMenuAnchor] = useState<null | HTMLElement>(null);
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const { t, i18n } = useTranslation();
 
   const handleFormUpdate = (section: string, data: any) => {
-    setFormData(prev => ({ ...prev, ...data }));
+    console.log(`[Page] Updating form data for section ${section}:`, data);
+    setFormData(prev => {
+      const newData = { 
+        ...prev, 
+        ...data,
+        features: data.features || prev.features || [] // Ensure features is always an array
+      };
+      console.log('[Page] New form data:', newData);
+      return newData;
+    });
     setActiveSection(section);
   };
 
@@ -201,14 +214,36 @@ export default function Home() {
   };
 
   const handleEstimation = () => {
+    console.log('[Page] Current form data:', formData);
+
+    // Vérification des champs requis
     const requiredFields = ['country', 'make', 'model', 'year', 'mileage', 'condition'];
-    const isValid = requiredFields.every(field => formData[field as keyof FormData]);
-    
-    if (isValid) {
-      setShowResult(true);
-    } else {
-      alert(t('pleaseCompleteAllFields'));
+    const missingFields = requiredFields.filter(field => {
+      const value = formData[field as keyof FormData];
+      if (field === 'mileage') {
+        return typeof value !== 'number' || value === null;
+      }
+      if (field === 'year') {
+        const yearValue = typeof value === 'number' ? value : 0;
+        return !yearValue || yearValue < 1900 || yearValue > new Date().getFullYear();
+      }
+      return !value || (typeof value === 'string' && !value.trim());
+    });
+
+    if (missingFields.length > 0) {
+      console.log('[Page] Missing or invalid fields:', missingFields);
+      alert(t('pleaseCompleteAllFields') + '\n' + missingFields.map(f => t(f)).join(', '));
+      return;
     }
+
+    // Validation supplémentaire des valeurs
+    if (formData.mileage < 0) {
+      alert(t('invalidMileage'));
+      return;
+    }
+
+    console.log('[Page] Form validation passed, showing result');
+    setShowResult(true);
   };
 
   const languages = [
@@ -217,6 +252,12 @@ export default function Home() {
     { code: 'de', name: 'Deutsch', flag: 'https://flagcdn.com/w40/de.png' },
     { code: 'es', name: 'Español', flag: 'https://flagcdn.com/w40/es.png' },
   ];
+
+  // Ensure formData has all required properties for ValuationResult
+  const valuationData = {
+    ...formData,
+    features: formData.features || []
+  };
 
   return (
     <PageWrapper>
@@ -313,7 +354,7 @@ export default function Home() {
             <Box>
               <StyledPaper>
                 <ValuationResult
-                  data={formData}
+                  data={valuationData}
                   onBack={() => setShowResult(false)}
                   onRestart={handleRestart}
                 />
@@ -323,5 +364,13 @@ export default function Home() {
         </ContentWrapper>
       </Container>
     </PageWrapper>
+  );
+}
+
+export default function Home() {
+  return (
+    <Providers>
+      <ClientHome />
+    </Providers>
   );
 }

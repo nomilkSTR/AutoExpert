@@ -38,44 +38,34 @@ export default function VehicleCondition({ onSubmit, initialData }: VehicleCondi
   });
 
   const onFormSubmit = (data: any) => {
-    // Validate all required fields have non-empty values
-    const requiredFields = {
-      condition: data.condition,
-    };
+    console.log('[VehicleCondition] Processing form data:', data);
 
-    // Check if any required field is missing or empty
-    const missingFields = Object.entries(requiredFields)
-      .filter(([_, value]) => !value)
-      .map(([field]) => field);
-
-    if (missingFields.length > 0) {
-      console.log('[VehicleCondition] Missing required fields:', missingFields);
+    // Vérifier et formater la condition
+    const condition = data.condition?.trim();
+    if (!condition || !conditions.includes(condition)) {
+      console.log('[VehicleCondition] Invalid condition:', condition);
       return;
     }
 
-    // All required fields are present, prepare the submission data
     const formData = {
-      ...data,
-      condition: data.condition,
-      additionalNotes: data.additionalNotes || '',
+      ...initialData,
+      condition,
+      additionalNotes: data.additionalNotes?.trim() || '',
     };
 
-    console.log('[VehicleCondition] Submitting form data:', formData);
+    console.log('[VehicleCondition] Submitting data:', formData);
     onSubmit(formData);
   };
 
-  // Add useEffect to watch form changes with debounce
   useEffect(() => {
     let timeout: NodeJS.Timeout;
     
     const subscription = watch((value, { name, type }) => {
       if (type === 'change') {
-        // Clear any existing timeout
         if (timeout) {
           clearTimeout(timeout);
         }
         
-        // Wait for 500ms after the last change before submitting
         timeout = setTimeout(() => {
           onFormSubmit(value);
         }, 500);
@@ -120,8 +110,8 @@ export default function VehicleCondition({ onSubmit, initialData }: VehicleCondi
               </Select>
             )}
           />
-          <FormHelperText error={!!errors.condition}>
-            {errors.condition ? errors.condition.message : t('selectCondition')}
+          <FormHelperText>
+            {errors.condition ? t('required') : t('selectCondition')}
           </FormHelperText>
         </FormControl>
 

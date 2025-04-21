@@ -95,45 +95,35 @@ export default function VehicleBasicInfo({ onSubmit, initialData }: VehicleBasic
   const selectedFuel = watch('fuel');
 
   const onFormSubmit = (data: any) => {
-    // Log the current form data for debugging
-    console.log('[VehicleBasicInfo] Current form data:', data);
+    console.log('[VehicleBasicInfo] Processing form data:', data);
 
-    // Validate all required fields have non-empty values
-    const requiredFields = {
-      make: data.make,
-      model: data.model,
-      year: data.year,
-      mileage: data.mileage,
-      engineSize: data.engineSize,
-      enginePower: data.enginePower,
-      transmission: data.transmission,
-      fuel: data.fuel
-    };
+    // Formater et valider les données essentielles
+    const make = data.make?.trim();
+    const model = data.model?.trim();
+    const year = Number(data.year);
+    const mileage = Number(data.mileage);
 
-    // Check if any required field is missing or empty
-    const missingFields = Object.entries(requiredFields)
-      .filter(([_, value]) => !value)
-      .map(([field]) => field);
-
-    if (missingFields.length > 0) {
-      console.log('[VehicleBasicInfo] Missing required fields:', missingFields);
+    // Vérifier les champs requis
+    if (!make || !model || !year || (mileage === undefined || mileage === null)) {
+      console.log('[VehicleBasicInfo] Missing required fields:', { make, model, year, mileage });
       return;
     }
 
-    // All required fields are present, prepare the submission data
+    // Préparer les données
     const formData = {
       ...data,
-      make: data.make.trim?.() || data.make,
-      model: data.model.trim?.() || data.model,
-      year: Number(data.year),
-      mileage: Number(data.mileage),
-      engineSize: data.engineSize,
-      enginePower: Number(data.enginePower),
-      transmission: data.transmission,
-      fuel: data.fuel,
+      make,
+      model,
+      year,
+      mileage,
+      version: data.version?.trim() || '',
+      engineSize: data.engineSize || '',
+      enginePower: data.enginePower ? Number(data.enginePower) : '',
+      transmission: data.transmission || '',
+      fuel: data.fuel || '',
     };
 
-    console.log('[VehicleBasicInfo] Submitting form data:', formData);
+    console.log('[VehicleBasicInfo] Submitting data:', formData);
     onSubmit(formData);
   };
 
