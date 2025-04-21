@@ -99,7 +99,7 @@ IMPORTANT: Les prix de voitures d'occasion sont souvent plus élevés que ce que
 
     // Filter out any listings with missing or invalid prices
     parsedContent.listings = parsedContent.listings.filter(
-      listing => typeof listing.price === 'number' && listing.price > 0
+      (listing: any) => typeof listing.price === 'number' && listing.price > 0
     );
     
     // Vérifier si des annonces valides existent
