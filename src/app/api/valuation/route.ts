@@ -170,7 +170,7 @@ export async function POST(request: Request) {
     
     // Calculer la variance des prix pour affiner le niveau de confiance
     if (marketData.listings.length >= 3) {
-      const prices = marketData.listings.map(listing => listing.price);
+      const prices = marketData.listings.map((listing: any) => listing.price);
       const avgPrice = prices.reduce((sum: number, price: number) => sum + price, 0) / prices.length;
       const variance = prices.reduce((sum: number, price: number) => sum + Math.pow(price - avgPrice, 2), 0) / prices.length;
       const coefficient = Math.sqrt(variance) / avgPrice; // coefficient de variation
@@ -184,7 +184,7 @@ export async function POST(request: Request) {
     }
     
     // Si la source des données est "Estimation", le niveau de confiance est forcément bas
-    if (marketData.listings.some(listing => listing.source === "Estimation")) {
+    if (marketData.listings.some((listing: any) => listing.source === "Estimation")) {
       confidence = 'low';
     }
     
